@@ -1,0 +1,10 @@
+Axioms are only assumed in default and audit build modes:
+
+SF F N  A  SA
+3  3 15 4  2
+
+
+Remove the introduction of assumptions by the presence of non-axiom contracts:
+
+SF F N A SA
+15 5 3 3 7

@@ -1,0 +1,121 @@
+\section{Potential for undefined behavior}
+
+In this section we analyze some examples of possible undefined behavior.
+
+\subsection{Example 1}
+
+In~\cite{p1321r0} an example provided by Peter Dimov (see at
+\url{https://godbolt.org/g/7TP7Mt}) with simulated contracts 
+is presented.
+
+Essentially this example translated into contracts syntax would be:
+
+\begin{lstlisting}
+void f(int x) [[expects audit: x==2]]
+{
+  printf("%d\n", x);
+}
+
+void g(int x) [[expects: x>=0 && x<3]]
+{
+  int a[3];
+  a[x] = 42;
+}
+
+void foo();
+void bar();
+void baz();
+
+void h(int x) [[expects: x>=1 && x<=3]]
+{
+  switch(x) {
+    case 1: foo(); break;
+    case 2: bar(); break;
+    case 3: baz(); break;
+  }
+}
+
+void test()
+{
+  int val = std::rand();
+
+  try { f(val); /*...*/ } catch(...) { /*...*/ }
+  try { g(val); /*...*/ } catch(...) { /*...*/ }
+  try { h(val); /*...*/ } catch(...) { /*...*/ }
+}
+\end{lstlisting}
+
+\subsubsection{Current status}
+
+With the current definition of contracts, compiling the code with the build mode
+set to \textmark{audit} is not problematic. The precondition at \cppid{f()} is
+checked and it can be assumed to be true in next calls. Then, calls to \cppid{g()}
+and \cppid{h()} can optimize out the contracts under the assumption that
+\cppid{x} is \cppid{2}. 
+
+However, if the build mode is set to \textmark{default}, the precondition at
+\cppid{f()} would not be checked, but still assumed.  Consequently, after the
+call to \cppid{f(val)} the compiler would be allowed to assume that \cppid{val}
+is \cppid{2} and the preconditions of \cppid{g()} and \cppid{h()} would be
+assumed to be correct and optimized out.  This would lead to undefined behavior
+for calls to \cppid{g()} (access out of bounds) and a surprising outcome for
+\cppid{h()} (no function is called).
+
+\subsubsection{Avoiding unchecked assumptions}
+
+If we change the situation to require that no assumption of unchecked contract
+can be made, the outcome is quite different.
+
+Compiling the code with the build mode set to \textmark{audit} would not be
+problematic and would lead to the same outcome than with the current wording.
+
+When the build mode is set to \textmark{default}, the precondition at
+\cppid{f()} would not be checked and would not be assumed. Consequently, after
+the call to \cppid{f(val)} no assumption can be made on the value of
+\cppid{val}. The preconditions of \cppid{g()} and \cppid{h()} would not be
+optimized out and the checks would be performed. No undefined behavior happens.
+
+\subsection{Example 2}
+
+This example is a variation of previous example, which is als discussed
+in~\cite{p1321r0}. In this variation the precondition at function \cppid{f()} is
+now moved the be an axiom.
+
+\begin{lstlisting}
+void f(int x) [[expects axiom: x==2]]
+{
+  printf("%d\n", x);
+}
+\end{lstlisting}
+
+With the current definition of contracts, axioms are always assumed.
+
+When the build mode is set to \textmark{default}, the precondition at
+\cppid{f()} would not be checked (as it is an axiom), but still assumed.
+In this case, the contract elimination is considered to be intentional as
+an axiom is considered to be always true.
+
+When the build mode is set to \textmark{off}, no precondition is checked, but
+\cppid{val==2} is still assumed. 
+
+In this specific case no change is required in the current wording.
+
+
+\subsection{Example 3}
+
+Consider now this simple example:
+
+\begin{lstlisting}
+void f(int * p) [[expects axiom: p!=nullptr]]
+{
+  if (p) g();
+  else h();
+}
+\end{lstlisting}
+
+When axioms are assumed \cppid{f()} would be optimized to always call go
+\cppid{g()}. 
+That is not always desirable, so we propose that axioms are not assumed when
+the build mode is \textmark{off} and to add a new build mode \textmark{axiom}
+where axioms are assumed (but not checked, as ever).
+

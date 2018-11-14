@@ -1,0 +1,46 @@
+\section{Introduction}
+
+Consider the following code:
+
+\begin{lstlisting}
+int f(int x)
+  [[expects: x>0]]
+{
+  return 1/x;
+}
+
+int g(int x)
+  [[expects audit: x==2 || x==3]]
+{
+  return f(x);
+}
+\end{lstlisting}
+
+Under the current wording~\cite{p0542r5}, contracts that are not checked can be assumed to be
+true. Consequently, we might have the following behaviours:
+
+\begin{itemize}
+  \item When build mode is \textmark{audit}, both checks are evaluated and
+consequently assumed. As a consequence \cppid{f()}'s precondition will not
+be evaluated as it can be proved to always be satisfied.
+  \item When build mode is \textmark{default}, only the check in \cppid{f()}
+would be evaluated. However, assuming the precondition in \cppid{g()} implies that
+the precondition inf \cppid{f()} is always satisified. Consequently, invoking
+\cppid{g()} with a value of \cppid{0} would lead to undefined behaviour.
+  \item When build mode is \textmark{off}, no check evaluated. However, they are
+both assumed leading again to undefined behaviour.
+\end{itemize}
+
+This original intent of allowing assumptions was to provide an ample margin for
+optimization. However, the above example is an illustration on how assumptions
+may lead to undefined behavior.
+
+The interactions of contracts and undefined behavior have been explained in
+detail in~\cite{p1321r0}. However, it should be noted that the main goal of
+contracts is allowing to write more correct software by helping to detect more
+programming errors. Introducing new undefined behavior was an unintentional
+effect that needs to be avoided.
+
+Of course, a secondary effect of contracts is giving compilers leeway to perform
+optimizations. We aim to satisfy this goal only in the cases that the first goal
+is not sacrificed.

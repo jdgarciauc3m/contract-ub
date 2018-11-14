@@ -1,0 +1,96 @@
+\section{Proposed solutions}
+
+\subsection{Avoiding the undefined behavior}
+
+We propose to avoid the undefined behavior by clarifying the semantics of every
+build mode in regards of both evaluation of conditions and asumption of thos
+conditions. 
+
+To define such sematics we propose to follow the following simple principles:
+
+\begin{itemize}
+
+\item A contract that, in a given build mode, is not evaluated cannot be used
+for any kind of assumption. This leads to modes where only contracts that have
+been checked are used for assumptions and avoiding in this way the identified
+paths towards undefined behavior.
+
+\item Axiom contract are considered as if the had been evaluated unless the
+build mode is off. This leads to a mode where no checking is made but no
+assumption is made either.
+
+\end{itemize}
+
+Below, we identify what are the exact semantics of each build level when applied
+to each contract level.
+
+\subsubsection{Build mode audit}
+
+\begin{tabular}{|l|c|c|}
+\hline
+\emph{contract-level} & evaluated & assumed \\
+\hline
+\hline
+\cppid{audit} & yes & yes\\
+\hline
+\cppid{default} & yes & yes\\
+\hline
+\cppid{axiom} & no & yes\\
+\hline
+\end{tabular}
+
+\subsubsection{Build mode default}
+
+\begin{tabular}{|l|c|c|}
+\hline
+\emph{contract-level} & evaluated & assumed \\
+\hline
+\hline
+\cppid{audit} & no & no\\
+\hline
+\cppid{default} & yes & yes\\
+\hline
+\cppid{axiom} & no & yes\\
+\hline
+\end{tabular}
+
+\subsubsection{Build mode off}
+
+\begin{tabular}{|l|c|c|}
+\hline
+\emph{contract-level} & evaluated & assumed \\
+\hline
+\hline
+\cppid{audit} & no & no\\
+\hline
+\cppid{default} & no & no\\
+\hline
+\cppid{axiom} & no & no\\
+\hline
+\end{tabular}
+
+\subsection{Allowing assumption of axioms}
+
+The new semantics for the existing build modes avoids undefined behavior, but
+lets no room for asumption of axiom contracts. Note that this might be
+interesting for expressing assertions that are known to be true.
+
+We propose a new build mode \textmark{axiom}, where only \cppid{axiom} contracts
+are assumed.
+
+\subsubsection{Build mode axiom}
+
+\begin{tabular}{|l|c|c|}
+\hline
+\emph{contract-level} & evaluated & assumed \\
+\hline
+\hline
+\cppid{audit} & no & no\\
+\hline
+\cppid{default} & no & no\\
+\hline
+\cppid{axiom} & no & yes\\
+\hline
+\end{tabular}
+
+

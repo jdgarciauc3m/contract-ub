@@ -1,0 +1,76 @@
+\section{Problem}
+
+\begin{frame}[t]{From P1321R0}
+\begin{itemize}
+\item
+I want to be able to expect (no pun intended) that when I write a contract predicate, its evaluation has no effect on the evaluation of other contracts predicates, whether any of those predicates are evaluated or not.
+
+\vfill
+\item
+I want to be able to expect that when I write a contract predicate that is evaluated in some standard checking mode, its evaluation doesn't cause UB in any standard checking mode just because it ends up evaluating to false, and that its evaluation doesn't affect the evaluation of other contract predicates.
+
+\end{itemize}
+\end{frame}
+
+\section{Possible minimal solution}
+
+\begin{frame}[t,fragile]{What can we use for optimization?}
+\begin{itemize}
+\item Only contracts that are checked can be used for optimizations.
+\end{itemize}
+\begin{lstlisting}
+void f(int x)
+  [[expects audit: x==2]]
+  [[expects: x>0]];
+
+void g() {
+  f(2);  // OK both in audit and default
+  f(1); // OK in default. Violation in audit
+}
+\end{lstlisting}
+\begin{itemize}
+  \item Build mode is audit $\Rightarrow$ Both checks used for opt.
+  \item Build mode is default $\Rightarrow$ Only second check used for opt.
+  \item Build mode is off $\Rightarrow$ No check used for opt.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{What about axiom contracts?}
+\begin{itemize}
+\item Contracts with axiom level are never evaluated. 
+\item However for the purpose of using the information of the contract 
+they are considered as if they are evaluated in default and audit levels.
+\end{itemize}
+\begin{lstlisting}
+void f(int x)
+  [[expects axiom: x>0]]  // #1
+  [[expects audit: x==2]] // #2
+  [[expects: x>1]];       // #3
+\end{lstlisting}
+\begin{itemize}
+  \item Build mode is audit $\Rightarrow$ Opt using 1,2 and 3.
+  \item Build mode is default $\Rightarrow$ Opt using 1 and 3
+  \item Build mode is off $\Rightarrow$ No opt using 1, 2 or 3.
+\end{itemize}
+\end{frame}
+
+\section{Proposed wording}
+
+\begin{frame}[t]{Contract evaluation}
+\begin{itemize}
+  \item Change [dcl.attr.contract.check]/4:
+    \begin{itemize}
+\item During constant expression evaluation (7.7), only predicates of checked contracts are evaluated. In other contexts, it is unspecified whether the predicate for a contract that is not checked under the current build level is evaluated; if the predicate of such a contract would evaluate to false, the behavior is undefined.
+    \end{itemize}
+\item To something along the lines:
+\begin{itemize}
+\item Only predicates of checked contracts under current build level are evaluated.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{About axiom}
+\begin{itemize}
+\item A contract-attribute-specifier whose contract-level is axiom is considered as-if it were evaluated only if the build level is default or audit.
+\end{itemize}
+\end{frame}

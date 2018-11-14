@@ -1,0 +1,32 @@
+\section{Some questions}
+
+\paragraph{Why do we add the axiom build mode?}
+Contracts with levels \cppid{default} and \cppid{audit} are assumed only
+if they have been checked. However, for contracts with level \textmark{cppid}
+some sytems may want to take the option to still assume them when other checks
+are disbled (new proposed build mode \textmark{axiom}) while in other
+systems the policy may be to avoid assuming any axiom when other checks are
+enabled (new sematics for build mode \textmark{off}).
+
+\paragraph{Would it make sense not to assume axioms when other checks are
+enabled?}
+An axiom is expected to be used for checks that are always true and do not need to
+be checked. Usual practice should be enable assumptions on axioms.
+
+\paragraph{Why not controlling individual semantics for each contract level?}
+That would lead to some combinations that may be problematic or with surprising
+behavior. Consider for examle, enabling assumptions for \cppid{axiom} contracts, enabling
+checking for \cppid{audit} contracts, but disabling checks for \cppid{default}
+contracts. In other cases, the combination of choices might even lead again to
+the undefined behavior that we are trying hard to avoid.
+
+\paragraph{Why not more build modes?}
+Four modes seem useful for a variety of use cases. They also seem enough to gain
+experience with the feature in C++20. After that, if needed, the catalog of
+build modes might be extended in C++23.
+
+\paragraph{Has this been implemented?}
+The prototype implementation at
+\url{https://github.com/arcosuc3m/clang-contracts} implements currently the new
+proposed sematics for \cppkey{audit}, \cppkey{default} and \cppkey{off} as there
+is no specific assumption enforcement.
