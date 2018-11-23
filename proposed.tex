@@ -3,8 +3,9 @@
 \subsection{Avoiding the undefined behavior}
 
 We propose to avoid the undefined behavior by clarifying the semantics of every
-build mode in regards of both evaluation of conditions and asumption of thos
-conditions. 
+build mode in regards of both evaluation of conditions and asumption of those
+conditions. For assumption of conditions the clarification needs to address the
+case where continuation is disabled and when the continuation is enables.
 
 To define such sematics we propose to follow the following simple principles:
 
@@ -14,6 +15,9 @@ To define such sematics we propose to follow the following simple principles:
 for any kind of assumption. This leads to modes where only contracts that have
 been checked are used for assumptions and avoiding in this way the identified
 paths towards undefined behavior.
+
+\item Moreover, contracts that have been checked can only be assumed if the
+continuation mode has been disabled. Otherwise, such assumptions cannot be made.
 
 \item Axiom contract are considered as if the had been evaluated unless the
 build mode is off. This leads to a mode where no checking is made but no
@@ -26,46 +30,49 @@ to each contract level.
 
 \subsubsection{Build mode audit}
 
-\begin{tabular}{|l|c|c|}
+\begin{tabular}{|l|c|c|c|}
 \hline
-\emph{contract-level} & evaluated & assumed \\
+\emph{contract-level} & evaluated & \multicolumn{2}{c|}{assumed}\\
+& & continuation on & continuation off\\
 \hline
 \hline
-\cppid{audit} & yes & yes\\
+\cppid{audit} & yes & no & yes\\
 \hline
-\cppid{default} & yes & yes\\
+\cppid{default} & yes & no & yes\\
 \hline
-\cppid{axiom} & no & yes\\
+\cppid{axiom} & no & yes & yes\\
 \hline
 \end{tabular}
 
 \subsubsection{Build mode default}
 
-\begin{tabular}{|l|c|c|}
+\begin{tabular}{|l|c|c|c|}
 \hline
-\emph{contract-level} & evaluated & assumed \\
+\emph{contract-level} & evaluated & \multicolumn{2}{c|}{assumed}\\
+& & continuation on & continuation off\\
 \hline
 \hline
-\cppid{audit} & no & no\\
+\cppid{audit} & no & no & no\\
 \hline
-\cppid{default} & yes & yes\\
+\cppid{default} & yes & no & yes\\
 \hline
-\cppid{axiom} & no & yes\\
+\cppid{axiom} & no & yes & yes\\
 \hline
 \end{tabular}
 
 \subsubsection{Build mode off}
 
-\begin{tabular}{|l|c|c|}
+\begin{tabular}{|l|c|c|c|}
 \hline
-\emph{contract-level} & evaluated & assumed \\
+\emph{contract-level} & evaluated & \multicolumn{2}{c|}{assumed}\\
+& & continuation on & continuation off\\
 \hline
 \hline
-\cppid{audit} & no & no\\
+\cppid{audit} & no & no & no\\
 \hline
-\cppid{default} & no & no\\
+\cppid{default} & no & no & no\\
 \hline
-\cppid{axiom} & no & no\\
+\cppid{axiom} & no & no & no\\
 \hline
 \end{tabular}
 
@@ -80,16 +87,17 @@ are assumed.
 
 \subsubsection{Build mode axiom}
 
-\begin{tabular}{|l|c|c|}
+\begin{tabular}{|l|c|c|c|}
 \hline
-\emph{contract-level} & evaluated & assumed \\
+\emph{contract-level} & evaluated & \multicolumn{2}{c|}{assumed}\\
+& & continuation on & continuation off\\
 \hline
 \hline
-\cppid{audit} & no & no\\
+\cppid{audit} & no & no & no\\
 \hline
-\cppid{default} & no & no\\
+\cppid{default} & no & no & no\\
 \hline
-\cppid{axiom} & no & yes\\
+\cppid{axiom} & no & yes & yes\\
 \hline
 \end{tabular}
 

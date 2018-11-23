@@ -6,8 +6,9 @@ In section \textbf{[dcl.attr.contract.check]/4}, edit as follows:
 
 \vspace{2em}
 
-{\addtolength{\leftskip}{5em}
-\noindent\remove{During constant expression evaluation (7.7), only
+\begin{flushright}
+\begin{minipage}[t]{0.9\textwidth}
+\noindent4. \remove{During constant expression evaluation (7.7), only
 predicates of checked contracts are evaluated. In other
 contexts, it is unspecified whether the predicate for a
 contract that is not checked under the current build level is
@@ -15,7 +16,8 @@ evaluated; if the predicate of such a contract would evaluate
 to false, the behavior is undefined.}
 \add{Only predicates of checked contracts under current build
 level are evaluated.}
-}
+\end{minipage}
+\end{flushright}
 
 \vspace{2em}
 
@@ -23,11 +25,23 @@ After \textbf{[dcl.attr.contract.check]/4}, add a new paragraph:
 
 \vspace{2em}
 
-{\addtolength{\leftskip}{3em}
-\noindent\add{Unless the \emph{build level} is \emph{off} it is unspecified
+\begin{flushright}
+\begin{minipage}[t]{0.9\textwidth}
+\noindent5. \add{Unless the \emph{build level} is \emph{off} it is unspecified
 whether the predicate for an \emph{axiom} contract is evaluated; if the
 predicate of such a contract would evaluate to false, the behavior is undefined.}
-}
+\end{minipage}
+\end{flushright}
+
+After \textbf{[dcl.attr.contract.check]/7}, add a new paragraph:
+
+\begin{flushright}
+\begin{minipage}[t]{0.9\textwidth}
+\noindent8. \add{When the violation continuation mode is set to \emph{on} no predicate
+of an \texttt{audit} or \texttt{default} contract will be assumed}\footnote{Authors 
+recognize that this paragraph has a better wording}
+\end{minipage}
+\end{flushright}
 
 \subsection{Part II: A new axiom build mode}
 

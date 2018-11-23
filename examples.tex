@@ -61,10 +61,10 @@ assumed to be correct and optimized out.  This would lead to undefined behavior
 for calls to \cppid{g()} (access out of bounds) and a surprising outcome for
 \cppid{h()} (no function is called).
 
-\subsubsection{Avoiding unchecked assumptions}
+\subsubsection{Avoiding unchecked assumptions with disabled continuation}
 
 If we change the situation to require that no assumption of unchecked contract
-can be made, the outcome is quite different.
+can be made when the continuation is disabled, the outcome is quite different.
 
 Compiling the code with the build mode set to \textmark{audit} would not be
 problematic and would lead to the same outcome than with the current wording.
@@ -74,6 +74,11 @@ When the build mode is set to \textmark{default}, the precondition at
 the call to \cppid{f(val)} no assumption can be made on the value of
 \cppid{val}. The preconditions of \cppid{g()} and \cppid{h()} would not be
 optimized out and the checks would be performed. No undefined behavior happens.
+
+\subsubsection{Avoiding all assumptions with enabled continuation}
+
+If we avoid all assumptions when continuation is enabled, we also avoid the
+possible undefined behavior derived from assuming a failed contract.
 
 \subsection{Example 2}
 
@@ -113,7 +118,7 @@ void f(int * p) [[expects axiom: p!=nullptr]]
 }
 \end{lstlisting}
 
-When axioms are assumed \cppid{f()} would be optimized to always call go
+When axioms are assumed \cppid{f()} would be optimized to always call 
 \cppid{g()}. 
 That is not always desirable, so we propose that axioms are not assumed when
 the build mode is \textmark{off} and to add a new build mode \textmark{axiom}

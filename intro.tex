@@ -31,6 +31,11 @@ the precondition inf \cppid{f()} is always satisified. Consequently, invoking
 both assumed leading again to undefined behaviour.
 \end{itemize}
 
+Additionally, when the continuation mode is \textmark{on} (continue after violation)
+the assumption brings in additional undefined behavior as now we are assuming conditions
+that might be false (because the failed and we returned after running the violation
+handler).
+
 This original intent of allowing assumptions was to provide an ample margin for
 optimization. However, the above example is an illustration on how assumptions
 may lead to undefined behavior.
