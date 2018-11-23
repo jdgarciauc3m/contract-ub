@@ -1,0 +1,105 @@
+\section{Assumptions and continuation mode}
+
+\subsection{Basic example}
+
+Consider now the following code
+
+\begin{lstlisting}
+void f(int * p) [[expects: p!= nullptr]]
+{
+  if (p) g();
+}
+\end{lstlisting}
+
+\subsubsection{Disabled continuation and check default contracts}
+
+If we compile with continuation mode set to \textmark{off} (the handler never returns)
+and the checking level is set to \textmark{default}, the compiler can
+use the information from the precondition. The generated code would be
+essentially the following:
+
+\begin{lstlisting}
+void f(int * p) {
+  if (p==nullptr) {
+    __invoke_handler(); // Never return
+  }
+  else {
+    g();
+  }
+}
+\end{lstlisting}
+
+The assumption that \cppid{p} is not \cppkey{nullptr} is derived from the
+structure of the generated code and no special provision is needed to state
+that the contract is assumed.
+
+\subsubsection{Enabled continuation mode and check default contracts}
+
+If we compile with continuation mode set to \textmark{on} (the handler might return)
+and checking level set to \textmark{default}, the compiler would generate a different
+code structure that woudl be essentially:
+
+\begin{lstlisting}
+void f(int * p) {
+  if (p==nullptr) {
+    __invoke_handler(); // May return
+  }
+  g();
+}
+\end{lstlisting}
+
+In this case, the contract (\cppid{p!=}\cppkey{nullptr})) is checked, but if it
+fails is not assumed. Again, no special provisions are needed, the behavior is the
+consequence of the structure of generated code. 
+
+\subsection{Another example}
+
+Let's try another example:
+
+\begin{lstlisting}
+void f(int i) {
+  [[assert: i==0]]
+  [[assert: i>=0]]
+  g();
+}
+\end{lstlisting}
+
+\subsubsection{Disabled continuation and check default contracts}
+
+In this case, the generated code would be equivalent to:
+
+\begin{lstlisting}
+void f(int i) {
+  if (i!=0) __invoke_handler(); // does not return
+  else {
+    if (i<0) __invoke_handler(); // does not return. Never called. Optimized out
+    g();
+  }
+}
+\end{lstlisting}
+
+The second check can only be called if the first one was successful.
+But if the first was successful \cppid{i} must be \cppid{0} and the second
+one will be optimized out. Note, that again this is a consequence of the 
+generated code structure.
+
+\subsubsection{Enabled continuation and check default contracts}
+
+In this case, the generated code would be equivalent to:
+
+\begin{lstlisting}
+void f(int i)  {
+  if (i!=0) __invoke_handler(); // may return
+  if (i<0) __invoke_handler(); // may return. Never optimized out
+  g();
+}
+\end{lstlisting}
+
+Now, both checks are independent and no one can be elided.
+
+\subsection{Consequences}
+
+As we have shown through examples, no special provision in the standard is
+needed to state our goal. Under disabled continuation mode a contract check implies
+its assumption. Under enabled continuation mode a contract check does not imply
+any assumption at all.

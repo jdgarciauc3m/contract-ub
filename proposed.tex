@@ -19,7 +19,7 @@ paths towards undefined behavior.
 \item Moreover, contracts that have been checked can only be assumed if the
 continuation mode has been disabled. Otherwise, such assumptions cannot be made.
 
-\item Axiom contract are considered as if the had been evaluated unless the
+\item Axiom contract are considered as if they had been evaluated unless the
 build mode is off. This leads to a mode where no checking is made but no
 assumption is made either.
 
@@ -101,4 +101,57 @@ are assumed.
 \hline
 \end{tabular}
 
+\subsection{Summary of sematics}
 
+In this section we summarize the build options and their semantics.
+
+The translation is controlled by the following options:
+
+\begin{itemize}
+  \item Build level: \cppid{off}, \cppid{axiom}, \cppid{default}, and \cppid{audit}.
+  \item Continuation mode: \cppid{off}, \cppid{on}.
+\end{itemize}
+
+However, note that when build level is \cppid{off} or \cppid{axiom} the effecct of the
+continuation mode is irrelevant. This leads us to six possible combinations.
+
+\begin{enumerate}
+
+\item Build-level=\cppid{off}, continuation=\cppid{off|on}.
+\begin{itemize}
+  \item No check is performed.
+  \item No assumption is made.
+\end{itemize}
+
+\item Build-level=\cppid{axiom}, continuation=\cppid{off|on}.
+\begin{itemize}
+  \item No check is performed.
+  \item Checks with \cppid{axiom} level are assumed.
+\end{itemize}
+
+\item Build-level=\cppid{default}, continuation=\cppid{off}
+\begin{itemize}
+  \item Checks with \cppid{default} level are evaluated and assumed.
+  \item Checks with \cppid{axiom} level are assumed.
+\end{itemize}
+
+\item Build-level=\cppid{default}, continuation=\cppid{on}
+\begin{itemize}
+  \item Checks with \cppid{default} level are evaluated but not assumed.
+  \item Checks with \cppid{axiom} level are assumed.
+\end{itemize}
+
+\item Build-level=\cppid{audit}, continuation=\cppid{off}
+\begin{itemize}
+  \item Checks with \cppid{audit} level are evaluated and assumed.
+  \item Checks with \cppid{default} level are evaluated and assumed.
+  \item Checks with \cppid{axiom} level are assumed.
+\end{itemize}
+
+\item Build-level=\cppid{audit}, continuation=\cppid{on}
+\begin{itemize}
+  \item Checks with \cppid{audit} level are evaluated but not assumed.
+  \item Checks with \cppid{default} level are evaluated but not assumed.
+  \item Checks with \cppid{axiom} level are assumed.
+\end{itemize}
+\end{enumerate}
