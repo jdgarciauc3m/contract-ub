@@ -4,7 +4,8 @@ In this section we analyze some examples of possible undefined behavior.
 
 \subsection{Example 1}
 
-In~\cite{p1321r0} an example provided by Peter Dimov (see at
+In~\cite{p1321r0} an example provided by Herb Sutter and
+prototyped by Peter Dimov (see at
 \url{https://godbolt.org/g/7TP7Mt}) with simulated contracts 
 is presented.
 
@@ -18,7 +19,7 @@ void f(int x) [[expects audit: x==2]]
 
 void g(int x) [[expects: x>=0 && x<3]]
 {
-  int a[3];
+  extern int a[3];
   a[x] = 42;
 }
 
@@ -57,9 +58,11 @@ However, if the build mode is set to \textmark{default}, the precondition at
 \cppid{f()} would not be checked, but still assumed.  Consequently, after the
 call to \cppid{f(val)} the compiler would be allowed to assume that \cppid{val}
 is \cppid{2} and the preconditions of \cppid{g()} and \cppid{h()} would be
-assumed to be correct and optimized out.  This would lead to undefined behavior
-for calls to \cppid{g()} (access out of bounds) and a surprising outcome for
-\cppid{h()} (no function is called).
+assumed to be correct and optimized out.  This would lead to undefined behavior.
+For calls to \cppid{h()} it might be the case that we got the surprising effect
+that no function is called. But even worse, if the switch is implemented as
+a jump table with no bounds check a wild branch would arise. This would
+result in random code execution and a very serious security issue.
 
 \subsubsection{Avoiding unchecked assumptions with disabled continuation}
 
@@ -82,7 +85,7 @@ possible undefined behavior derived from assuming a failed contract.
 
 \subsection{Example 2}
 
-This example is a variation of previous example, which is als discussed
+This example is a variation of previous example, which is also discussed
 in~\cite{p1321r0}. In this variation the precondition at function \cppid{f()} is
 now moved the be an axiom.
 

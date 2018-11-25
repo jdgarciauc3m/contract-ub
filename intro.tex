@@ -17,18 +17,21 @@ int g(int x)
 \end{lstlisting}
 
 Under the current wording~\cite{p0542r5}, contracts that are not checked can be assumed to be
-true. Consequently, we might have the following behaviours:
+true. Consequently, we might have the following behaviors:
 
 \begin{itemize}
-  \item When build mode is \textmark{audit}, both checks are evaluated and
-consequently assumed. As a consequence \cppid{f()}'s precondition will not
-be evaluated as it can be proved to always be satisfied.
+  \item When build mode is \textmark{audit}, both checks are intended to be evaluated and
+consequently assumed. As a consequence \cppid{f()}'s precondition 
+can be elided even its checking is on
+as it can be assumed to always be satisfied.
   \item When build mode is \textmark{default}, only the check in \cppid{f()}
-would be evaluated. However, assuming the precondition in \cppid{g()} implies that
-the precondition inf \cppid{f()} is always satisified. Consequently, invoking
-\cppid{g()} with a value of \cppid{0} would lead to undefined behaviour.
+is intended to be evaluated. However, assuming the precondition in \cppid{g()} implies that
+the precondition inf \cppid{f()} is always satisfied and so the check can be elided 
+even though it is on. 
+Consequently, invoking
+\cppid{g()} with a value of \cppid{0} would lead to undefined behavior.
   \item When build mode is \textmark{off}, no check evaluated. However, they are
-both assumed leading again to undefined behaviour.
+both assumed leading again to undefined behavior.
 \end{itemize}
 
 Additionally, when the continuation mode is \textmark{on} (continue after violation)

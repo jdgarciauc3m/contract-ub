@@ -3,11 +3,11 @@
 \subsection{Avoiding the undefined behavior}
 
 We propose to avoid the undefined behavior by clarifying the semantics of every
-build mode in regards of both evaluation of conditions and asumption of those
+build mode in regards of both evaluation of conditions and assumption of those
 conditions. For assumption of conditions the clarification needs to address the
 case where continuation is disabled and when the continuation is enables.
 
-To define such sematics we propose to follow the following simple principles:
+To define such semantics we propose to follow the following simple principles:
 
 \begin{itemize}
 
@@ -79,7 +79,7 @@ to each contract level.
 \subsection{Allowing assumption of axioms}
 
 The new semantics for the existing build modes avoids undefined behavior, but
-lets no room for asumption of axiom contracts. Note that this might be
+lets no room for assumption of axiom contracts. Note that this might be
 interesting for expressing assertions that are known to be true.
 
 We propose a new build mode \textmark{axiom}, where only \cppid{axiom} contracts
@@ -101,7 +101,7 @@ are assumed.
 \hline
 \end{tabular}
 
-\subsection{Summary of sematics}
+\subsection{Summary of semantics}
 
 In this section we summarize the build options and their semantics.
 
@@ -112,7 +112,7 @@ The translation is controlled by the following options:
   \item Continuation mode: \cppid{off}, \cppid{on}.
 \end{itemize}
 
-However, note that when build level is \cppid{off} or \cppid{axiom} the effecct of the
+However, note that when build level is \cppid{off} or \cppid{axiom} the effect of the
 continuation mode is irrelevant. This leads us to six possible combinations.
 
 \begin{enumerate}
