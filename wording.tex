@@ -21,33 +21,17 @@ level are evaluated.}
 
 \vspace{2em}
 
-After \textbf{[dcl.attr.contract.check]/4}, add a new paragraph:
+\subsection{Part II: A new axiom mode}
 
-\vspace{2em}
+After \textbf{[dcl.attr.contract.check]/4}, add a new paragraph:
 
 \begin{flushright}
 \begin{minipage}[t]{0.9\textwidth}
-\noindent5. \add{Unless the \emph{build level} is \emph{off} it is unspecified
+\noindent5. \add{A translation may be performed with an \emph{axiom mode}
+which can be either \emph{off} or \emph{on}.
+Unless the \emph{axiom level} is \emph{off} it is unspecified
 whether the predicate for an \emph{axiom} contract is evaluated; if the
 predicate of such a contract would evaluate to false, the behavior is undefined.}
 \end{minipage}
 \end{flushright}
 
-\subsection{Part II: A new axiom build mode}
-
-In section \textbf{[dcl.attr.contract.check]/3]}, edit as follows:
-
-\vspace{2em}
-
-{\addtolength{\leftskip}{5em}
-A translation may be performed with one of the following \emph{build levels}: 
-\emph{off},\add{\emph{axiom}}, \emph{default}, or \emph{audit}. 
-A translation with build level set to \emph{off} \add{or \emph{axiom}} performs no checking for any contract.
-A translation with build level set to \emph{default} performs checking for \textbf{\texttt{default}} contracts. 
-A translation with build level set to \emph{audit} performs checking for \textbf{\texttt{default}} and 
-\textbf{\texttt{audit}} contracts. 
-If no build level is explicitly selected, the build level is \emph{default}. 
-The mechanism for selecting the build level is implementation-defined. 
-The translation of a program consisting of translation units where the build level is not the same in all translation units is conditionally-supported. 
-There should be no programmatic way of setting, modifying, or querying the build level of a translation unit.
-}

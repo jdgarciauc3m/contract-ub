@@ -18,88 +18,65 @@ paths towards undefined behavior.
 
 \item Moreover, contracts that have been checked can only be assumed if the
 continuation mode has been disabled. Otherwise, such assumptions cannot be made.
+Note, that no special provision is needed as the application of general rules
+of conditional statements would derive this behavior as illustrated in previous
+sections.
 
-\item Axiom contract are considered as if they had been evaluated unless the
-build mode is off. This leads to a mode where no checking is made but no
-assumption is made either.
+\item Axiom contract are considered as if they had been evaluated 
+when they are enabled. Otherwise, they are ignored.
+Note that in any case, they need to have a valid syntax.
 
 \end{itemize}
 
 Below, we identify what are the exact semantics of each build level when applied
 to each contract level.
 
-\subsubsection{Build mode audit}
+\subsubsection{Build mode}
+
+The build mode can be any of the following three: \textmark{off}, \textmark{default}, 
+\textmark{audit}. This build level affeccts which checks are evaluated at run-time.
+\vspace{1em}. Note, that only \cppid{audit} and \cppid{default} checks are affected
+by the build mode.
 
 \begin{tabular}{|l|c|c|c|}
 \hline
-\emph{contract-level} & evaluated & \multicolumn{2}{c|}{assumed}\\
-& & continuation on & continuation off\\
+\emph{contract-level} & \multicolumn{3}{c|}{Build mode}\\
+\cline{2-4}
+& \textmark{off} & \textmark{default} & \textmark{audit} \\
 \hline
 \hline
-\cppid{audit} & yes & no & yes\\
+\cppid{audit} & no & no & yes\\
 \hline
-\cppid{default} & yes & no & yes\\
-\hline
-\cppid{axiom} & no & yes & yes\\
-\hline
-\end{tabular}
-
-\subsubsection{Build mode default}
-
-\begin{tabular}{|l|c|c|c|}
-\hline
-\emph{contract-level} & evaluated & \multicolumn{2}{c|}{assumed}\\
-& & continuation on & continuation off\\
-\hline
-\hline
-\cppid{audit} & no & no & no\\
-\hline
-\cppid{default} & yes & no & yes\\
-\hline
-\cppid{axiom} & no & yes & yes\\
+\cppid{default} & no & yes & yes\\
 \hline
 \end{tabular}
 
-\subsubsection{Build mode off}
+\subsubsection{Continuation mode}
 
-\begin{tabular}{|l|c|c|c|}
-\hline
-\emph{contract-level} & evaluated & \multicolumn{2}{c|}{assumed}\\
-& & continuation on & continuation off\\
-\hline
-\hline
-\cppid{audit} & no & no & no\\
-\hline
-\cppid{default} & no & no & no\\
-\hline
-\cppid{axiom} & no & no & no\\
-\hline
-\end{tabular}
+The continuation mode can be either \textmark{off} or \textmark{on}.
+Note that the generated code for contracts check might be different depending
+on the continuation mode:
+
+\begin{itemize}
+  \item When the continuation mode is \cppid{off} an implementation is
+        allowed to assume that an invocation to the violation handler
+        will not return an generate code accordingly.
+  \item When the continuation mode is \cppid{on} an implementation is 
+        not allowed to perform such assumption, which will result in
+        different code generation.
+\end{itemize}
 
 \subsection{Allowing assumption of axioms}
 
-The new semantics for the existing build modes avoids undefined behavior, but
-lets no room for assumption of axiom contracts. Note that this might be
-interesting for expressing assertions that are known to be true.
+We propose that we add an axiom mode. The axiom mode can be either
+\textmark{off} or \textmark{on}.
 
-We propose a new build mode \textmark{axiom}, where only \cppid{axiom} contracts
-are assumed.
-
-\subsubsection{Build mode axiom}
-
-\begin{tabular}{|l|c|c|c|}
-\hline
-\emph{contract-level} & evaluated & \multicolumn{2}{c|}{assumed}\\
-& & continuation on & continuation off\\
-\hline
-\hline
-\cppid{audit} & no & no & no\\
-\hline
-\cppid{default} & no & no & no\\
-\hline
-\cppid{axiom} & no & yes & yes\\
-\hline
-\end{tabular}
+\begin{itemize}
+  \item When the axiom mode is \textmark{off} an implementation is not
+        allowed to make any assumption.
+  \item When the axiom mode is \textmark{on} an implementation is
+        allowed to assume the axiom.
+\end{itemize}
 
 \subsection{Summary of semantics}
 
@@ -108,50 +85,83 @@ In this section we summarize the build options and their semantics.
 The translation is controlled by the following options:
 
 \begin{itemize}
-  \item Build level: \cppid{off}, \cppid{axiom}, \cppid{default}, and \cppid{audit}.
+  \item Build mode: \cppid{off}, \cppid{default}, and \cppid{audit}.
+  \item Axiom mode: \cppid{off}, \cppid{on}.
   \item Continuation mode: \cppid{off}, \cppid{on}.
 \end{itemize}
 
-However, note that when build level is \cppid{off} or \cppid{axiom} the effect of the
-continuation mode is irrelevant. This leads us to six possible combinations.
-
 \begin{enumerate}
 
-\item Build-level=\cppid{off}, continuation=\cppid{off|on}.
+\item Build-mode=\cppid{off}, Axiom-mode=\cppid{off}, continuation=\cppid{off|on}.
 \begin{itemize}
   \item No check is performed.
   \item No assumption is made.
 \end{itemize}
 
-\item Build-level=\cppid{axiom}, continuation=\cppid{off|on}.
+\item Build-mode=\cppid{off}, Axiom-mode=\cppid{on}, continuation=\cppid{off|on}.
 \begin{itemize}
   \item No check is performed.
   \item Checks with \cppid{axiom} level are assumed.
 \end{itemize}
 
-\item Build-level=\cppid{default}, continuation=\cppid{off}
+\item Build-level=\cppid{default}, Axiom-mode=\cppid{off}, continuation=\cppid{off}
 \begin{itemize}
   \item Checks with \cppid{default} level are evaluated and assumed.
+  \item Code for contract checks assumes that the violation handler does not return.
+  \item No assumption is made.
+\end{itemize}
+
+\item Build-level=\cppid{default}, Axiom-mode=\cppid{on}, continuation=\cppid{off}
+\begin{itemize}
+  \item Checks with \cppid{default} level are evaluated and assumed.
+  \item Code for contract checks assumes that the violation handler does not return.
   \item Checks with \cppid{axiom} level are assumed.
 \end{itemize}
 
-\item Build-level=\cppid{default}, continuation=\cppid{on}
+\item Build-level=\cppid{default}, Axiom-mode=\cppid{off}, continuation=\cppid{on}
 \begin{itemize}
   \item Checks with \cppid{default} level are evaluated but not assumed.
+  \item Code for contract checks assumes that the violation handler may return.
+  \item No assumption is made.
+\end{itemize}
+
+\item Build-level=\cppid{default}, Axiom-mode=\cppid{on}, continuation=\cppid{on}
+\begin{itemize}
+  \item Checks with \cppid{default} level are evaluated but not assumed.
+  \item Code for contract checks assumes that the violation handler may return.
   \item Checks with \cppid{axiom} level are assumed.
 \end{itemize}
 
-\item Build-level=\cppid{audit}, continuation=\cppid{off}
+\item Build-level=\cppid{audit}, Axiom-mode=\cppid{off}, continuation=\cppid{off}
 \begin{itemize}
   \item Checks with \cppid{audit} level are evaluated and assumed.
   \item Checks with \cppid{default} level are evaluated and assumed.
+  \item Code for contract checks assumes that the violation handler does not return.
+  \item No assumption is made.
+\end{itemize}
+
+\item Build-level=\cppid{audit}, Axiom-mode=\cppid{on}, continuation=\cppid{off}
+\begin{itemize}
+  \item Checks with \cppid{audit} level are evaluated and assumed.
+  \item Checks with \cppid{default} level are evaluated and assumed.
+  \item Code for contract checks assumes that the violation handler does not return.
   \item Checks with \cppid{axiom} level are assumed.
 \end{itemize}
 
-\item Build-level=\cppid{audit}, continuation=\cppid{on}
+\item Build-level=\cppid{audit}, Axiom-mode=\cppid{off}, continuation=\cppid{on}
 \begin{itemize}
   \item Checks with \cppid{audit} level are evaluated but not assumed.
   \item Checks with \cppid{default} level are evaluated but not assumed.
+  \item Code for contract checks assumes that the violation handler may return.
+  \item No assumption is made.
+\end{itemize}
+
+\item Build-level=\cppid{audit}, Axiom-mode=\cppid{on}, continuation=\cppid{on}
+\begin{itemize}
+  \item Checks with \cppid{audit} level are evaluated but not assumed.
+  \item Checks with \cppid{default} level are evaluated but not assumed.
+  \item Code for contract checks assumes that the violation handler may return.
   \item Checks with \cppid{axiom} level are assumed.
 \end{itemize}
+
 \end{enumerate}

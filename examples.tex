@@ -106,8 +106,12 @@ an axiom is considered to be always true.
 When the build mode is set to \textmark{off}, no precondition is checked, but
 \cppid{val==2} is still assumed. 
 
-In this specific case no change is required in the current wording.
-
+However, in some cases it might be interesting to be able to remove assumptions
+introduced by axioms. That would be the case, in a debug version where the 
+developer wants to remove all possible assumptions. On the other hand,
+there are cases where axioms are desired to be used as assumptions.
+We consider this aspect orthogonal to the checking level induced by the
+build mode.
 
 \subsection{Example 3}
 
@@ -123,7 +127,7 @@ void f(int * p) [[expects axiom: p!=nullptr]]
 
 When axioms are assumed \cppid{f()} would be optimized to always call 
 \cppid{g()}. 
-That is not always desirable, so we propose that axioms are not assumed when
-the build mode is \textmark{off} and to add a new build mode \textmark{axiom}
-where axioms are assumed (but not checked, as ever).
+That is not always desirable.
+Again the ability to control independently  whether axioms are assumed or not
+gives us what we need.
 
