@@ -58,11 +58,15 @@ However, if the build mode is set to \textmark{default}, the precondition at
 \cppid{f()} would not be checked, but still assumed.  Consequently, after the
 call to \cppid{f(val)} the compiler would be allowed to assume that \cppid{val}
 is \cppid{2} and the preconditions of \cppid{g()} and \cppid{h()} would be
-assumed to be correct and optimized out.  This would lead to undefined behavior.
-For calls to \cppid{h()} it might be the case that we got the surprising effect
-that no function is called. But even worse, if the switch is implemented as
-a jump table with no bounds check a wild branch would arise. This would
-result in random code execution and a very serious security issue.
+assumed to be correct and optimized out.  This would lead to undefined
+behavior.  For calls to \cppid{h()} it might be the case that we got the
+surprising effect that no function is called. But even worse, if the switch is
+implemented as a jump table and the compiler assumes the contract and elides
+the jump table bounds check, then a wild branch would arise.  The generated
+code would attempt to read out-of-bounds at \cppid{\_\_jmptbl[val]},
+reinterpret whatever bytes it finds there as an address of executable code, and
+jump there to continue execution.  This would result in random code execution
+and a very serious security issue.
 
 \subsubsection{Avoiding unchecked assumptions with disabled continuation}
 
