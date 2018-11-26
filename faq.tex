@@ -2,26 +2,32 @@
 
 \paragraph{Why do we add the axiom build mode?}
 Contracts with levels \cppid{default} and \cppid{audit} are assumed only
-if they have been checked. However, for contracts with level \textmark{cppid}
+if they have been checked. That is pure consequence of their evaluation.
+However, for contracts with level \textmark{axiom}
 some systems may want to take the option to still assume them when other checks
-are disabled (new proposed build mode \textmark{axiom}) while in other
+are disabled (new proposed axiom mode \textmark{on}) while in other
 systems the policy may be to avoid assuming any axiom when other checks are
-enabled (new semantics for build mode \textmark{off}).
+enabled (new proposed axiom mode \textmark{off}).
 
 \paragraph{Would it make sense not to assume axioms when other checks are
 enabled?}
 An axiom is expected to be used for checks that are always true and do not need to
 be checked. Usual practice should be enable assumptions on axioms.
+However, in some debug modes developers might want to avoid those assumptions.
+That is obtained by disabling axioms with axiom mode set to \textmark{off}.
 
 \paragraph{Why not controlling individual semantics for each contract level?}
 That would lead to some combinations that may be problematic or with surprising
-behavior. Consider for example, enabling assumptions for \cppid{axiom} contracts, enabling
-checking for \cppid{audit} contracts, but disabling checks for \cppid{default}
+behavior. Consider for example,  
+enabling checking for \cppid{audit} contracts, but disabling checks for \cppid{default}
 contracts. In other cases, the combination of choices might even lead again to
-the undefined behavior that we are trying hard to avoid.
+the undefined behavior that we are trying hard to avoid. Even worse we might
+end up with the practice of needing to duplicate a predicate in more that one
+assertion to guarantee it in multiple build modes.
 
 \paragraph{Why not more build modes?}
-Four modes seem useful for a variety of use cases. They also seem enough to gain
+The proposed modes seem useful for a variety of use cases. 
+They also seem enough to gain
 experience with the feature in C++20. After that, if needed, the catalog of
 build modes might be extended in C++23.
 

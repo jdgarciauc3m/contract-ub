@@ -72,7 +72,9 @@ In this case, the generated code would be equivalent to:
 void f(int i) {
   if (i!=0) __invoke_handler(); // does not return
   else {
-    if (i<0) __invoke_handler(); // does not return. Never called. Optimized out
+    if (i<0) {            // Always false as i==0 is always true
+      __invoke_handler(); // does not return
+    }
     g();
   }
 }
@@ -81,7 +83,17 @@ void f(int i) {
 The second check can only be called if the first one was successful.
 But if the first was successful \cppid{i} must be \cppid{0} and the second
 one will be optimized out. Note, that again this is a consequence of the 
-generated code structure.
+generated code structure, and the resulting code would be similar to:
+
+\begin{lstlisting}
+void f(int i) {
+  if (i!=0) __invoke_handler(); // does not return
+  else {
+    g();
+  }
+}
+\end{lstlisting}
+
 
 \subsubsection{Enabled continuation and check default contracts}
 
