@@ -2,12 +2,12 @@
 
 \subsection{Avoiding the undefined behavior}
 
-We propose to avoid the undefined behavior by clarifying the semantics of every
+This paper proposes to avoid the undefined behavior by clarifying the semantics of every
 build mode in regards of both evaluation of conditions and assumption of those
 conditions. For assumption of conditions the clarification needs to address the
 case where continuation is disabled and when the continuation is enables.
 
-To define such semantics we propose to follow the following simple principles:
+To define such semantics, the following simple principles are proposed to be followed:
 
 \begin{itemize}
 
@@ -28,7 +28,8 @@ Note that in any case, they need to have a valid syntax.
 
 \end{itemize}
 
-Below, we identify what are the exact semantics of each build level when applied
+Below, the exact semantics of each build level are identified when 
+they are applied
 to each contract level.
 
 \subsubsection{Build mode}
@@ -73,7 +74,7 @@ on the continuation mode:
 
 \subsection{Allowing assumption of axioms}
 
-We propose that we add an axiom mode. The axiom mode can be either
+This paper proposes that an axiom mode is added. The axiom mode can be either
 \textmark{off} or \textmark{on}.
 
 \begin{itemize}
@@ -89,7 +90,7 @@ is not backwards propagated.
 
 \subsection{Summary of semantics}
 
-In this section we summarize the build options and their semantics.
+In this section a summary of the build options and their semantics is presented.
 
 The translation is controlled by the following options:
 
