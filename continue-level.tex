@@ -1,0 +1,42 @@
+\section{A new level: continue}
+\label{sec:continue}
+
+In some situations it is desirable to combine in a single translation units
+multiple contracts where:
+\begin{itemize}
+	\item Some contracts are checked and, when not satisfied, result in
+		program termination (after executing the violation handler).
+	\item Some contracts are checked and, when not satisfied, result in
+		program continuation (after executing the violation handler).
+\end{itemize}
+
+To distinguish this situation, we propose a new level
+\cppkey{continue}\footnote{Othe names for the level are possible (e.g.
+\cppkey{check\_maybe\_continue}).}.
+The semantics for this new level are derived from
+\cppkey{check\_maybe\_continue} presented in~\cite{p1332r0}.
+
+\begin{lstlisting}
+void f(int * p)
+  [[expects: p!=nullptr]]
+  [[expects continue: *p>0]]
+{
+  g(*p);
+}
+\end{lstlisting}
+
+When the build mode is \cppid{default} a violation of the first check will
+result in program termination, while a violation to the second check will result
+in continuation.
+
+\begin{lstlisting}
+void h() {
+  f(nullptr);  // Violation. Termination.
+
+  int r = 1;
+  f(&r);       // Everything OK.
+
+  int s = -1;
+  f(&r);       // Violation. Continuation.
+}
+\end{lstlisting}
