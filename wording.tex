@@ -1,4 +1,5 @@
 \section{Proposed wording}
+\label{sec:wording}
 
 In this section a (probably incomplete) wording is presented.
 This will be refined before the Kona meeting.
@@ -40,4 +41,91 @@ predicate of such a contract would evaluate to false, the behavior is undefined.
 
 \subsection{Part III: A new continue level}
 
-{\color{red}\textbf{To be done}}.
+\noindent Change the production in \textbf{[dcl.attr.contract.syn]} for \emph{contract-level}:
+\\
+
+\noindent\emph{contract-level}:\\
+\indent\texttt{ default}\\
+\indent\texttt{ audit}\\
+\indent\add{\texttt{continue}}\\
+\indent\texttt{ axiom}\\
+
+In section \textbf{[dcl.attr.contract.check]/1} edit as follows:\\
+
+\noindent1.
+If the \emph{contract-level} of a \emph{contract-attribute-specifier} is absent, it is
+assumed to be \texttt{default}. 
+[\emph{Note}: A \texttt{default} \emph{contract-level} is expected to be
+used for those contracts where the cost of run-time checking is assumed to be
+small (or at least not expensive) compared to the cost of executing the
+function. 
+An \texttt{audit} \emph{contract-level} is expected to be used for those contracts
+where the cost of run-time checking is assumed to be large (or at least
+significant) compared to the cost of executing the function.
+\add{A \texttt{continue} \emph{contract-level} is expected to be used for those contracts
+whose violation should not terminate program execution.}
+An \texttt{axiom} \emph{contract-level} is expected to be used for those contracts that are formal
+comments and are not evaluated at run-time. 
+--- \emph{end note}]\\
+
+In section \textbf{[dcl.attr.contract.check]/3} edit as follows:\\
+
+\noindent3.
+A translation may be performed with one of the following \emph{build levels}: 
+\emph{off},\add{\emph{minimal}, }\emph{default}, or \emph{audit}. 
+A translation with build level set to \emph{off} performs no
+checking for any contract. 
+\add{A translation with a build level set to \emph{minimal} performs
+checking for \texttt{continue} contracts.}
+A translation with build level set to \emph{default}
+performs checking for \texttt{default}\add{and \texttt{continue}} contracts. 
+A translation with build level set to \emph{audit} 
+performs checking for 
+\texttt{default}\add{,}\remove{and}\texttt{audit}\add{and \texttt{continue}} contracts. 
+If no build level is explicitly selected, the build level is \emph{default}. 
+The mechanism for selecting the build level is implementation-defined. 
+The translation of a program consisting of translation units where the build 
+level is not the same in all translation units is conditionally-supported. 
+There should be no programmatic
+way of setting, modifying, or querying the build level of a translation unit.\\
+
+In section \textbf{[dcl.attr.contract.check]/7} edit as follows:\\
+
+\noindent7.
+A translation may be performed with one of the following violation 
+continuation modes: \emph{off} or \emph{on}. 
+A translation with violation continuation mode set to \emph{off} terminates 
+execution by invoking the function \texttt{std::terminate} (13.5.1) after 
+completing the execution of the violation handler\add{if the contract violation
+invoking the handler had a level of \texttt{default} or \texttt{audit}.
+A translation with a violation continuation mode set to \emph{off} continues
+execution after the execution of the violation handler if the contract violation
+invoking the handler had a level of \texttt{continue}}. 
+A translation with a violation continuation mode set to
+\emph{on} continues execution after completing the execution of the violation
+handler. 
+If no continuation mode is explicitly selected, the default continuation mode is
+\emph{off}. [\emph{Note}: A continuation mode set to \emph{on} provides the 
+opportunity to install a logging handler to instrument a pre-existing
+code base and fix errors before enforcing checks. --- \emph{end note}] 
+[ \emph{Example} :
+\newcommand{\codeadd}{\makebox[0pt][l]{\color{green}\rule[-4pt]{0.65\linewidth}{14pt}}}
+\begin{lstlisting}[
+  basicstyle=\ttfamily,
+  keywordstyle=\color{black},
+  identifierstyle=\color{black},
+  commentstyle=\color{black},
+  escapeinside={@}{@}
+]
+  void f(int x) [[expects: x > 0]];
+@ \codeadd @ void f2(int x) [[expects continue: x > 0]];
+  void g() {
+    f(0);    // std::terminate() after handler if continuation mode is off;
+             // proceeds after handler if continuation mode is on
+    /* ... */
+ @ \codeadd @
+ @ \codeadd @ f2(0);    // proceeds after handler
+ @ \codeadd @ /* ... */
+  }
+\end{lstlisting}
+--- \emph{end example} ]

@@ -12,7 +12,7 @@ multiple contracts where:
 
 To distinguish this situation, we propose a new level
 \cppkey{continue}\footnote{Othe names for the level are possible (e.g.
-\cppkey{check\_maybe\_continue}).}.
+\cppkey{check\_maybe\_continue}, \cppkey{log}, ...).}.
 The semantics for this new level are derived from
 \cppkey{check\_maybe\_continue} presented in~\cite{p1332r0}.
 
@@ -40,3 +40,27 @@ void h() {
   f(&r);       // Violation. Continuation.
 }
 \end{lstlisting}
+
+It is important to remark that the continuation mode in which translation is
+performed has no effect on \cppkey{continue} contracts. For those contracts, the
+continuation mode is always enabled.
+
+Different users may have different needs on what disabling contracts mean. For
+some groups disabling contracts mean that still \cppkey{continue} contracts are
+checked. However for toher groups there exist the need for a mode where
+disabling contracts means completely disabling all checks. To satisfy the needs
+of both groups this paper proposes the introduction of a new build mode
+\cppid{minimal}. With this introduction the following build modes are available:
+
+\begin{itemize}
+
+	\item \cppid{off}: No contract is checked.
+
+	\item \cppid{minimal}: Only \cppkey{continue} contracts are checked.
+
+	\item \cppid{default}: \cppkey{continue} and \cppkey{default} contracts
+		are checked
+
+	\item \cppid{audit}: All contracts are checked.
+
+\end{itemize}
