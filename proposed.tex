@@ -38,32 +38,30 @@ to each contract level.
 
 \subsubsection{Build mode}
 
-The build mode can be any of the following four: \textmark{off}, \textmark{minimal}, 
+The build mode can be any of the following four: \textmark{off},
 \textmark{default}, 
 \textmark{audit}. This build level affeccts which checks are evaluated at run-time.
 
 \vspace{1em}
 
-\begin{tabular}{|l|c|c|c|c|}
+\begin{tabular}{|l|c|c|c|}
 \hline
-\emph{contract-level} & \multicolumn{4}{c|}{Build mode}\\
-\cline{2-5}
-& \textmark{off} & \textmark{minimal} & \textmark{default} & \textmark{audit} \\
+\emph{contract-level} & \multicolumn{3}{c|}{Build mode}\\
+\cline{2-4}
+& \textmark{off} & \textmark{default} & \textmark{audit} \\
 \hline
 \hline
-	\cppid{axiom} & not checked & not checked & not checked & not checked\\
+	\cppid{axiom} & not checked & not checked & not checked\\
 \hline
-	\cppid{audit} & not checked & not checked& not checked & checked\\
+	\cppid{audit} & not checked & not checked & checked\\
 \hline
-	\cppid{default} & not checked & not checked & checked & checked\\
-\hline
-	\cppid{continue} & not checked & checked & checked & checked\\
+	\cppid{default} & not checked & checked & checked\\
 \hline
 \end{tabular}
 
 \vspace{1em}
 
-Note, that only \cppid{audit}, \cppid{default} and \cppid{continue} checks are affected
+Note, that only \cppid{audit} and \cppid{default} checks are affected
 by the build mode.
 
 \subsubsection{Continuation mode}
@@ -115,7 +113,7 @@ In this section a summary of the build options and their semantics is presented.
 The translation is controlled by the following options:
 
 \begin{itemize}
-  \item Build mode: \cppid{off}, \cppid{minimal}, \cppid{default}, and \cppid{audit}.
+  \item Build mode: \cppid{off}, \cppid{default}, and \cppid{audit}.
   \item Axiom mode: \cppid{off}, \cppid{on}.
   \item Continuation mode: \cppid{off}, \cppid{on}.
 \end{itemize}
@@ -134,97 +132,62 @@ The translation is controlled by the following options:
   \item Checks with \cppkey{axiom} level are assumed.
 \end{itemize}
 
-\item Build-level=\cppid{minimal}, Axiom-mode=\cppid{off}, continuation=\cppid{off|on}
-\begin{itemize}
-  \item Checks with \cppkey{continue} level are evaluated and assumed.
-  \item Checks with \cppkey{default} are neither performed nor assumed
-  \item Checks with \cppkey{audit} are neither performed nor assumed.
-  \item Code for a \cppkey{continue} contract check assumes that violation handler
-	  may return.
-  \item No \cppkey{axiom} is assumed.
-\end{itemize}
-
-\item Build-level=\cppid{minimal}, Axiom-mode=\cppid{on}, continuation=\cppid{off|on}
-\begin{itemize}
-  \item Checks with \cppkey{continue} level are evaluated and assumed.
-  \item Checks with \cppkey{default} are neither performed nor assumed
-  \item Checks with \cppkey{audit} are neither performed nor assumed.
-  \item Code for a \cppkey{continue} contract check assumes that violation handler
-	  may return.
-  \item Checks with \cppkey{axiom} level are assumed.
-\end{itemize}
-
 \item Build-level=\cppid{default}, Axiom-mode=\cppid{off}, continuation=\cppid{off}
 \begin{itemize}
-  \item Checks with \cppkey{continue} level are evaluated and assumed.
   \item Checks with \cppkey{default} level are evaluated and assumed.
   \item Checks with \cppkey{audit} are neither performed nor assumed.
   \item Code for \cppkey{default} contract checks 
 	  assumes that the violation handler does not return.
-  \item Code for \cppkey{continue} contract check assumes that violation handler
-	  may return.
   \item No \cppkey{axiom} is assumed.
 \end{itemize}
 
 \item Build-level=\cppid{default}, Axiom-mode=\cppid{on}, continuation=\cppid{off}
 \begin{itemize}
-  \item Checks with \cppkey{continue} level are evaluated and assumed.
   \item Checks with \cppkey{default} level are evaluated and assumed.
   \item Checks with \cppkey{audit} are neither performed nor assumed.
   \item Code for \cppkey{default} contract checks 
 	  assumes that the violation handler does not return.
-  \item Code for \cppkey{continue} contract check assumes that violation handler
-	  may return.
   \item Checks with \cppkey{axiom} level are assumed.
 \end{itemize}
 
 \item Build-level=\cppid{default}, Axiom-mode=\cppid{off}, continuation=\cppid{on}
 \begin{itemize}
-  \item Checks with \cppkey{continue} level are evaluated and assumed.
   \item Checks with \cppkey{default} level are evaluated but not assumed.
   \item Checks with \cppkey{audit} are neither performed nor assumed.
-  \item Code for \cppkey{continue} and \cppkey{default} contract check assumes 
+  \item Code for \cppkey{default} contract check assumes 
 	  that violation handler may return.
   \item No \cppkey{axiom} is assumed.
 \end{itemize}
 
 \item Build-level=\cppid{default}, Axiom-mode=\cppid{on}, continuation=\cppid{on}
 \begin{itemize}
-  \item Checks with \cppkey{continue} level are evaluated and assumed.
   \item Checks with \cppkey{default} level are evaluated but not assumed.
   \item Checks with \cppkey{audit} are neither performed nor assumed.
-  \item Code for \cppkey{continue} and \cppkey{default} contract check assumes 
+  \item Code for \cppkey{default} contract check assumes 
 	  that violation handler may return.
   \item Checks with \cppkey{axiom} level are assumed.
 \end{itemize}
 
 \item Build-level=\cppid{audit}, Axiom-mode=\cppid{off}, continuation=\cppid{off}
 \begin{itemize}
-  \item Checks with \cppkey{continue} level are evaluated and assumed.
   \item Checks with \cppkey{default} level are evaluated and assumed.
   \item Checks with \cppkey{audit} level are evaluated and assumed.
   \item Code for \cppkey{default} and \cppkey{audit} contract checks 
 	  assumes that the violation handler does not return.
-  \item Code for \cppkey{continue} contract check assumes that violation handler
-	  may return.
   \item No \cppkey{axiom} is assumed.
 \end{itemize}
 
 \item Build-level=\cppid{audit}, Axiom-mode=\cppid{on}, continuation=\cppid{off}
 \begin{itemize}
-  \item Checks with \cppkey{continue} level are evaluated and assumed.
   \item Checks with \cppkey{default} level are evaluated and assumed.
   \item Checks with \cppkey{audit} level are evaluated and assumed.
   \item Code for \cppkey{default} and \cppkey{audit} contract checks 
 	  assumes that the violation handler does not return.
-  \item Code for \cppkey{continue} contract check assumes that violation handler
-	  may return.
   \item Checks with \cppkey{axiom} level are assumed.
 \end{itemize}
 
 \item Build-level=\cppid{audit}, Axiom-mode=\cppid{off}, continuation=\cppid{on}
 \begin{itemize}
-  \item Checks with \cppkey{continue} level are evaluated and assumed.
   \item Checks with \cppkey{default} level are evaluated but not assumed.
   \item Checks with \cppkey{audit} level are evaluated but not assumed.
   \item Code for all contract checks assumes that the violation handler may return.
@@ -233,7 +196,6 @@ The translation is controlled by the following options:
 
 \item Build-level=\cppid{audit}, Axiom-mode=\cppid{on}, continuation=\cppid{on}
 \begin{itemize}
-  \item Checks with \cppkey{continue} level are evaluated and assumed.
   \item Checks with \cppkey{default} level are evaluated but not assumed.
   \item Checks with \cppkey{audit} level are evaluated but not assumed.
   \item Code for all contract checks assumes that the violation handler may return.
