@@ -1,0 +1,65 @@
+\section{Continuation mode}
+\label{sec:continue}
+
+The ability to enable or disable the continuation mode of a translation unit as
+a whole is more than it is needed. This has been agreed by several authors of
+the original contracts proposal. In fact that can be safely removed as long as
+there is a way to state that a specific check should continue upon violation.
+
+\subsection{Reasons to simplify}
+
+TBD: This needs to be elaborated.
+
+\subsection{A simplified model}
+
+Once the continuation build mode is removed a translation is controlled by the
+following options:
+
+\begin{itemize}
+  \item Build mode: \cppid{off}, \cppid{default}, \cppid{audit}.
+  \item Axiom mode: \cppid{off}, \cppid{on}.
+\end{itemize}
+
+In addition we propose that any precondition, postcondition or assertion may
+have an optional mode. 
+
+\begin{lstlisting}
+void f(int * p) {
+  g(p);
+  [[assert: p!=nullptr]]; // Default. Terminates on violation.
+  [[assert audit continue: *p==42]]; // Continue on violation.
+  //...
+}
+\end{lstlisting}
+
+Note that \cppkey{continue} does not specify a level, and in fact it is
+orthogonal to it. It just changes the behavior of a contract check making it to
+continue after executing the violation handler instead terminating program
+execution.
+
+The contract mode \cppkey{continue} can be applied to any \cppkey{default} or
+\cppkey{audit} contract.
+
+\begin{lstlisting}
+[[assert: p!=nullptr]]; // Default contract. Terminate on violation.
+
+[[assert continue: p!=nullptr]]; // Default contract. Continue on violation.
+[[assert default continue: p!=nullptr]]; // Same as above
+
+[[assert audit: p!=nullptr]]; // Audit contract. Terminate on violation.
+[[assert audit continue: p!=nullptr]]; // Audit contract. Continue on violation
+\end{lstlisting}
+
+However, a mode is nonsens for an \cppkey{axiom} contract as they do not have
+run-time semantics.
+
+\begin{lstlisting}
+[[assert axiom continue: p!=nullptr]]; // Error.
+\end{lstlisting}
+
+We selected the word \cppkey{continue} as we beleive it is the simplest way of
+stating programmers intentions (continue execution after this check regardless
+violation status). We find that adding adjectives (e.g. \emph{maybe}, \emph{always},
+\emph{never}) are just confusing and missleading. We could also have added
+a \cppkey{terminate} or \cppkey{exit} mode to state the opposite, but we beleived
+that this was an unnecessary complication.

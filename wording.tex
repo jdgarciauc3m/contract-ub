@@ -39,3 +39,19 @@ predicate of such a contract would evaluate to false, the behavior is undefined.
 \end{minipage}
 \end{flushright}
 
+\subsection{Part III: Removing continue build mode}
+
+Remove completely \textbf{[dcl.attr.contract.check]/7}, and the
+following cluase
+
+\begin{flushright}
+\begin{minipage}[t]{0.9\textwidth}
+\noindent 7.
+	\add{After completing the execution of the violation handler execution is terminated
+	by invoking the function \texttt{std::terminate} (13.5.1).}
+\end{minipage}
+\end{flushright}
+
+\subsection{Part IV: Adding a contract mode}
+
+TBD.
