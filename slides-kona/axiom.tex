@@ -1,6 +1,6 @@
 \section{Controlling axiom}
 
-\begin{frame}[t,fragile]{Example}
+\begin{frame}[t,fragile]{PROBLEM: Example 1}
 \begin{block}{}
 \begin{lstlisting}
 void f(int * p) [[expects axiom: p!=nullptr]]
@@ -16,12 +16,12 @@ void f(int * p) [[expects axiom: p!=nullptr]]
     \begin{itemize}
       \item \cppid{f()} is optimized to just call \cppid{g()}.
     \end{itemize}
-  \item Not desirable for debugging!
-  \item Need a way to disable axiom assumption.
+  \item \alert{Not desirable for debugging!}
+  \item Need a way to \textmark{disable axiom} assumption.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[t,fragile]
+\begin{frame}[t,fragile]{PROBLEM: Example 2}
 \begin{block}{}
 \begin{lstlisting}
 void f(int x) [[expects axiom: x==2]] { std::cout << x; }
@@ -34,7 +34,7 @@ void h(int x) { f(x); g(x); }
 \end{block}
 \begin{itemize}
   \item Calling \cppid{f(x)} assumes \cppid{x==2}.
-  \item The check for precondition of \cppid{g(x)} is removed.
+  \item The check for precondition of \cppid{g(x)} is \alert{removed}.
   \item Debug versions should allow for removing axioms!
 \end{itemize}
 \end{frame}
@@ -42,6 +42,7 @@ void h(int x) { f(x); g(x); }
 \begin{frame}[t]{Proposal for axioms assumption}
 \begin{itemize}
 \item Axioms assumption can be enabled or disabled.
+\item Axioms are enabled by default.
 \item Provide an axiom mode that is orhtogonal to the build mode.
 \item If an axiom contains any invocation to a function that is declared
       but not defined the axiom is ignored. 

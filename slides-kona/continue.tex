@@ -2,17 +2,19 @@
 
 \begin{frame}[t]{Why a continuation mode}
 \begin{itemize}
-  \item Key motivating case for continuation:
+	\item Key \textmark{motivating} case for continuation:
     \begin{itemize}
       \item Gradual introduction of contracts in existing codebases.
       \item Adding more contracts to a library.
     \end{itemize}
-  \item We want:
+  \vfill
+  \item \textmark{We want}:
     \begin{itemize}
       \item Existing contracts terminate upon violation.
       \item Newly added contracts log the violation and continue.
     \end{itemize}
-  \item But:
+  \vfill
+  \item \textmark{But}:
     \begin{itemize}
       \item Setting continuation for a whole translation does not give us what we want.
     \end{itemize}
@@ -35,18 +37,18 @@
 
 \begin{frame}[t,fragile]{Part II: Add a continue syntax}
 \begin{itemize}
-  \item For \cppkey{default} and \cppkey{audit} contracts a \cppkey{continue} mode
+  \item For \cppkey{default} and \cppkey{audit} contracts a \cppkey{continue} modifier
         can be specified.
     \begin{itemize}
       \item It changes the check by continuing execution after violation handler.
     \end{itemize}
 \end{itemize}
-\begin{lstlisting}
+	\begin{lstlisting}[escapechar=@]
 [[assert: p!=nullptr]]; // Default contract. Terminates.
-
+@\pause@
 [[assert continue: p!=nullptr]]; // Default contract. Continues.
 [[assert default continue: p!=nullptr]]; // Same as above
-
+@\pause@
 [[assert audit: p!=nullptr]]; // Audit contract. Terminates.
 [[assert audit continue: p!=nullptr]]; // Audit contract. Continues.
 \end{lstlisting}

@@ -1,6 +1,6 @@
 \section{Removing UB from contracts}
 
-\begin{frame}[t,fragile]{Example 1}
+\begin{frame}[t,fragile]{PROBLEM: Example 1}
 \vspace{-1em}
 \begin{columns}[T]
 
@@ -13,7 +13,7 @@ int f(int x)
   return 1/x;
 }
 
-ing g(int x) 
+int g(int x) 
   [[expects audit: x==2 || x==3]] // #2
 {
   return f(x);
@@ -35,20 +35,20 @@ ing g(int x)
       \item Only \#1 is checked.
       \item \#2 is assumed.
       \item \#1 can be elided.
-      \item \cppid{g(0)} is UB.
+      \item \cppid{g(0)} is \alert{UB}.
     \end{itemize}
   \pause\vfill
   \item \emph{build}=\cppid{off}
     \begin{itemize}
       \item \#1 and \#2 are not checked.
       \item \#1 and \#2 are assumed.
-      \item \cppid{g(0)} is UB.
+      \item \cppid{g(0)} is \alert{UB}.
     \end{itemize}
 \end{itemize}
 \end{columns}
 \end{frame}
 
-\begin{frame}[t,fragile]{Example 2 (Herb Sutter)}
+\begin{frame}[t,fragile]{PROBLEM: Example 2 (Herb Sutter)}
 \begin{block}{}
 \begin{lstlisting}
 void f(int x) [[expects audit: x==2]]
@@ -68,7 +68,7 @@ void g(int x)
 \end{frame}
 
 
-\begin{frame}[t,fragile]{Example 2 (Herb Sutter)}
+\begin{frame}[t,fragile]{PROBLEM: Example 2 (Herb Sutter)}
 \begin{block}{}
 \begin{lstlisting}
 void h(int x)
@@ -83,12 +83,12 @@ void h(int x)
 \end{lstlisting}
 \end{block}
 \begin{itemize}
-\item If precondition not satisfied no function would be called.
-\item Much worse if \cppkey{switch} implemented as \emph{jump-table}.
+	\item If precondition not satisfied \alert{no function would be called}.
+	\item Much \alert{worse} if \cppkey{switch} implemented as \emph{jump-table}.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[t,fragile]{Example 2 (Herb Sutter)}
+\begin{frame}[t,fragile]{PROBLEM: Example 2 (Herb Sutter)}
 \begin{block}{}
 \begin{lstlisting}
 void test() {
@@ -100,8 +100,13 @@ void test() {
 \end{lstlisting}
 \end{block}
 \begin{itemize}
-\item \emph{build}=\cppid{audit} $\Rightarrow$ OK.
-\item \emph{build}=\cppid{default} $\Rightarrow$ UB.
+\item \pause \emph{build}=\cppid{audit} $\Rightarrow$ OK.
+\item \pause \emph{build}=\cppid{default} $\Rightarrow$ \alert{UB}.
+  \begin{itemize}
+	  \item After calling \cppid{f()} we \textmark{assume} \cppid{val==2}.
+	  \item Checks at \cppid{g()} and \cppid{h()} are \alert{removed}.
+  \end{itemize}
+
 \end{itemize}
 \end{frame}
 

@@ -1,0 +1,212 @@
+\section{Observations on P1429R0}
+
+\begin{frame}[t]{Semantics}
+\begin{itemize}
+  \item P1429R0 defines four semantics:
+  \begin{itemize}
+    \item \emph{ignore}.
+    \item \emph{assume}.
+    \item \emph{check-never-continue}.
+    \item \emph{check-maybe-continue}. 
+  \end{itemize}
+  \vfill
+  \item It proposes to be able to assign any semantic for any contract level.
+    \begin{itemize}
+      \item Leads to 32 combinations!
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Orhogonality}
+\begin{itemize}
+  \item Too much orthogonality is dangerous.
+    \begin{itemize}
+      \item Are things really orthogonal?
+    \end{itemize}
+  \vfill
+  \item 32 combinations are not manageable.
+    \begin{itemize}
+      \item What are the implacations for tools?
+      \item How do I distribute my binaries?
+      \item How do I manage complexity?
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Ignore}
+\begin{itemize}
+  \item Selective ingnorance is dangerous.
+\end{itemize}
+\begin{block}{Problem}
+\begin{lstlisting}
+void f(int * p)
+  [[expects: p!=nullptr]]   //#1
+  [[expects audit: *p>0]];  //#2
+\end{lstlisting}
+\end{block}
+\begin{itemize}
+  \item Options:
+  \begin{itemize}
+    \item Ignoring \#1 and \#2 is OK $\Rightarrow$ \emph{build-mode}=\cppid{off}.
+    \item Checking \#1 and \#2 is OK $\Rightarrow$ \emph{build-mode}=\cppid{audit}.
+    \item Checking \#1 and ignoring \#2 is OK \emph{build-mode}=\cppid{default}
+    \item Ignoring \#1 and checking \#2 leads to \alert{UB}.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Assume}
+\begin{itemize}
+  \item Excessive assumption leads to undefined behavior
+  \vfill
+  \item Don't forget:
+    \begin{itemize}
+      \item Beign able to assume a \cppkey{default} or \cppkey{audit} contract
+            has considered a defect that triggered P1290.
+      \item Assuming non-checked contracts may lead to removing other checks.
+    \end{itemize}
+  \vfill
+  \item Options:
+    \begin{itemize}
+      \item Assuming \cppkey{default} or \cppkey{audit} contracts may lead to UB.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Continuation}
+\begin{itemize}
+  \item P1429R0 proposes two continuation semantics:
+    \begin{itemize}
+      \item \emph{check-never-continue}: Termination on violation.
+      \item \emph{check-maybe-continue}: Continue after violation.      
+    \end{itemize}
+
+  \vfill
+  \item Assigning continuation per level is not needed for gradual introduction
+	  of contracts.
+    \begin{itemize}
+      \item Just use in code continuation when needed.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Equivalence}
+\begin{itemize}
+  \item All combinations in D1290R2 can be expressed through P1429R0:
+    \begin{itemize}
+      \item Axiom-mode=\cppid{off}, Build-mode=\cppid{off}.
+        \begin{itemize}
+	  \item \cppkey{axiom}=\emph{ignore}, 
+		\cppkey{default}=\emph{ignore}, 
+	        \cppkey{audit}=\emph{ignore}.
+        \end{itemize}
+      \item Axiom-mode=\cppid{on}, Build-mode=\cppid{off}.
+        \begin{itemize}
+	  \item \cppkey{axiom}=\emph{assume}, 
+		\cppkey{default}=\emph{ignore}, 
+	        \cppkey{audit}=\emph{ignore}.
+        \end{itemize}
+      \item Axiom-mode=\cppid{off}, Build-mode=\cppid{default}.
+        \begin{itemize}
+	  \item \cppkey{axiom}=\emph{ignore}, 
+		\cppkey{default}=\emph{terminate}, 
+	        \cppkey{audit}=\emph{ignore}.
+        \end{itemize}
+      \item Axiom-mode=\cppid{on}, Build-mode=\cppid{default}.
+        \begin{itemize}
+	  \item \cppkey{axiom}=\emph{assume}, 
+		\cppkey{default}=\emph{terminate}, 
+	        \cppkey{audit}=\emph{ignore}.
+        \end{itemize}
+      \item Axiom-mode=\cppid{off}, Build-mode=\cppid{audit}.
+        \begin{itemize}
+	  \item \cppkey{axiom}=\emph{ignore}, 
+		\cppkey{default}=\emph{terminate}, 
+	        \cppkey{audit}=\emph{terminate}.
+        \end{itemize}
+      \item Axiom-mode=\cppid{on}, Build-mode=\cppid{audit}.
+        \begin{itemize}
+	  \item \cppkey{axiom}=\emph{assume}, 
+		\cppkey{default}=\emph{terminate}, 
+	        \cppkey{audit}=\emph{terminate}.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Individual mapping considered harmful}
+\begin{itemize}
+  \item Individual mapping may lead to highly dangerous mappings.
+\end{itemize}
+\begin{lstlisting}
+void f(int * p)
+  [[expects: p!=nullptr]]
+  [[expects audit: *p > 0]];
+\end{lstlisting}
+\begin{itemize}
+  \item Consider:
+    \begin{itemize}
+      \item \cppkey{default}=check-maybe-continue, \cppkey{audit}=check-never-continue.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Levels versus modes}
+\begin{itemize}
+  \item P1429R0 allows to specify for a contract \textbf{either} a
+	  \emph{contract-level} o \emph{contract-mode}.
+    \begin{itemize}
+      \item The only contract mode is \cppkey{check\_maybe\_continue}.
+      \item Assumed to have a \cppkey{default} level.
+      \item \alert{We cannot have audit continuing contracts!}.	      
+    \end{itemize}
+
+  \vfill
+  \item D1290R2 proposes a \cppkey{continue} modifier.
+    \begin{itemize}
+      \item Can be applied to any \cppkey{default} or \cppkey{audit} contract.
+      \item Generalization.
+      \item Simplicity.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Other syntaxes}
+\begin{itemize}
+  \item A \emph{syntax-mode} for \cppkey{ignore}.
+    \begin{itemize}
+      \item Only syntax check!
+      \item Not checked. Not assumed.
+      \item Whats the point?
+    \end{itemize}
+\end{itemize}
+\begin{lstlisting}
+[[assert ignore: predicate()]];
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[t,fragile]{Other syntaxes}
+\begin{itemize}
+  \item A \emph{syntax-mode} for \cppkey{assume}.
+    \begin{itemize}
+      \item Assumptions that cannot be disabled.
+      \item But I want to debug with no optimizations!
+    \end{itemize}
+\end{itemize}
+\begin{lstlisting}
+[[assert assume: predicate()]];
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[t,fragile]{Other syntaxes}
+\begin{itemize}
+  \item A \emph{syntax-mode} for \cppkey{check\_never\_continue}.
+    \begin{itemize}
+      \item Terminating checks that cannot be disabled.
+      \item But I want to disable all checks in my super-release mode.
+    \end{itemize}
+\end{itemize}
+\begin{lstlisting}
+[[assert check_never_continue: predicate()]];
+\end{lstlisting}
+\end{frame}

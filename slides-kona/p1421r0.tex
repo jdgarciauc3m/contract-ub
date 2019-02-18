@@ -1,0 +1,45 @@
+\section{Observations on P1421R0}
+
+\begin{frame}[t]{Behavior}
+\begin{itemize}
+  \item P1421R0 proposes to include in the standard the definition of
+        five semantics introduced in P1333R0.
+    \begin{itemize}
+      \item \emph{ignore}.
+      \item \emph{assume}.
+      \item \emph{check-never-continue}.
+      \item \emph{check-maybe-continue}.
+      \item \emph{check-always-continue}.
+    \end{itemize}
+  \vfill
+  \item It does not seem possible to specify the difference between 
+        \emph{maybe} and \emph{always}.
+    \begin{itemize}
+      \item It is \emph{optimization barriers} land.
+    \end{itemize}
+  \vfill
+  \item Specifying definitions in the standard should be delayed until they are needed.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Alternate syntax}
+\begin{itemize}
+  \item Alternate syntax to introduce results on postconditions.
+\end{itemize}
+\begin{lstlisting}
+[[ensures(r): r>0]];
+\end{lstlisting}
+\begin{itemize}
+  \item Reasons:
+    \begin{itemize}
+      \item Tell the difference between levels and variable names.
+        \begin{itemize}
+          \item Is this really needed?
+        \end{itemize}
+      \item Allow for arbitrary tags.
+        \begin{itemize}
+          \item Are we redesigning?
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+\end{frame}
