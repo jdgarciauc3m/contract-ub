@@ -1,0 +1,113 @@
+\section{Comparison with other proposals}
+\label{sec:compare}
+
+In this section, we hilight our differences with other related proposals.
+
+\subsection{Differences with P1429R0}
+
+In P1429R0~\cite{p1429r0} for semantics are defined (\emph{ignore}, 
+\emph{assume}, \emph{check-never-continue}, and 
+\emph{check-maybe-continue}). We compare here with those semantics:
+
+\begin{itemize}
+  \item The \emph{ignore} semantics is obtained in our current model
+        by disabling contract checking (build mode \cppid{off}).
+  \item The \emph{assume} semantics is obtained for \cppkey{axiom}
+        contracts by enabling axioms. We have already expressed in this
+        paper the dangers of assuming contracts for \cppkey{default}
+        and \cppkey{audit}.
+  \item The \emph{check-never-continue} is what we call termination and
+        it is what happens for any checked \cppkey{default} or \cppkey{audit}
+        contract that has no \cppkey{continue} adjective.
+  \item The \emph{check-maybe-continue} is what we call \cppkey{continue} and
+        it is what happens for any checked \cppkey{default} or \cppkey{audit}
+        contract that has a \cppkey{continue} adjective.
+\end{itemize}
+
+P1429R0 then proposes the ability to select any of those semantics for any
+contract level. Of course, all the combinations that we identified in this
+paper can be expressed by those means. Below we show the equivalence:
+
+\begin{itemize}
+\item Build-mode=\cppid{off}, Axiom-mode=\cppid{off}.
+\begin{itemize}
+  \item \cppkey{axiom}=\emph{ignore}, \cppkey{default}=\emph{ignore}, \cppkey{audit}=\emph{ignore}.
+\end{itemize}
+\item Build-mode=\cppid{off}, Axiom-mode=\cppid{on}.
+\begin{itemize}
+  \item \cppkey{axiom}=\emph{assume}, \cppkey{default}=\emph{ignore}, \cppkey{audit}=\emph{ignore}.
+\end{itemize}
+\item Build-mode=\cppid{default}, Axiom-mode=\cppid{off}.
+\begin{itemize}
+  \item \cppkey{axiom}=\emph{ignore}, \cppkey{default}=\emph{check-never-continue}, \cppkey{audit}=\emph{ignore}.
+\end{itemize}
+\item Build-mode=\cppid{default}, Axiom-mode=\cppid{on}.
+\begin{itemize}
+  \item \cppkey{axiom}=\emph{assume}, \cppkey{default}=\emph{check-never-continue}, \cppkey{audit}=\emph{ignore}.
+\end{itemize}
+\item Build-mode=\cppid{audit}, Axiom-mode=\cppid{off}.
+\begin{itemize}
+  \item \cppkey{axiom}=\emph{ignore}, \cppkey{default}=\emph{check-never-continue}, \cppkey{audit}=\emph{check-never-continue}.
+\end{itemize}
+\item Build-mode=\cppid{audit}, Axiom-mode=\cppid{on}.
+\begin{itemize}
+  \item \cppkey{axiom}=\emph{assume}, \cppkey{default}=\emph{check-never-continue}, \cppkey{audit}=\emph{check-never-continue}.
+\end{itemize}
+\end{itemize}
+
+Note that the semantics \emph{check-maybe-continue} 
+(for simplicity \emph{continue}) is not in any of our combinations, 
+as this semantics, in our model, is only for in-code continuing contracts.
+
+Our most important divergence here is that we consider that individual mapping of
+semantics to levels is highly dangerous and error-prone. As a mere example,
+consider the following:
+
+\begin{lstlisting}
+void f(int * p)
+  [[expects: p!=nullptr]]
+  [[expects audit: *p > 0]];
+\end{lstlisting}
+
+If we allow any arbitrary combination we could select, for example, the following
+semantics: \cppkey{default}=\emph{ignore}, \cppkey{audit}=\emph{check-never-continue}.
+This combination, would lead to undefined behavior when \cppid{p}\texttt{==}\cppkey{nullptr}.
+
+Our second divergence is that P1429R0 allows either a contract-level or a contract-mode,
+where the only proposed contract-mode for now is \cppkey{check\_maybe\_continue}
+that is assumed to have a \cppkey{default} level.
+Instead of that, we propose de \cppkey{continue} adjective that can be applied either
+to \cppkey{default} or \cppkey{audit} contracts.
+We see our model as a more generalized one, and at the same time, we provide
+a simpler syntax.
+
+Last but not least, P1429R0 proposes explicit syntax for the other three semantics.
+Adding a syntax for \emph{ignore} makes a contract only syntactically checked.
+Adding a syntax for \emph{assume} would lead to non-ignorable assumptions.
+Adding a syntax for \emph{check\_never\_continue} would introduce non-ignorable
+terminating checkes. The paper proposes that most uses of those syntaxes would
+be in combination with macros, which we see as a drawback.
+
+\subsection{Differences with P1421R0}
+
+In P1421R0~\cite{p1421r0} the five semantics from P1333R0, are cited. The main
+problem with this is that despite the efforts made, it does not seem possible
+to tell the difference between \emph{check-maybe-continue} and
+\emph{check-always-continue}. Additonally, the rest of semantics do not
+need to be defined in the standard unless they are effectively used.
+
+Secondly, P1421R0 proposes an alternate syntax for postconditions for stating
+the return value:
+
+\begin{lstlisting}
+[[ensures(r): r>0]]
+\end{lstlisting}
+
+The rationale for that is being able to tell the difference between a level and 
+a variable name. We consider that not necessary as there is a fixed number of
+levels and a developer may easily select any other name for the return value.
+
+Additionally, the proposal for additional arbitrary tags does not seem justified
+and is a complication that seems a redesign of contracts. This also applies to
+the ability to add additional implementation defined extensions.
+

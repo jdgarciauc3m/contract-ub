@@ -1,4 +1,5 @@
 \section{Some questions}
+\label{sec:questions}
 
 \paragraph{Why do we add the axiom build mode?}
 Contracts with levels \cppid{default} and \cppid{audit} are assumed only
@@ -11,8 +12,11 @@ enabled (new proposed axiom mode \textmark{off}).
 
 \paragraph{Would it make sense not to assume axioms when other checks are
 enabled?}
-An axiom is expected to be used for checks that are always true and do not need to
-be checked. Usual practice should be enable assumptions on axioms.
+An axiom is expected to be used for checks that may be assumed to be true 
+and do not need to be checked. 
+A set of axioms can be inconsistent; if a tool detects inconsistency in a
+set of axioms that is considered to be an error.
+Usual practice should be enable assumptions on axioms.
 However, in some debug modes developers might want to avoid those assumptions.
 That is obtained by disabling axioms with axiom mode set to \textmark{off}.
 

@@ -8,7 +8,42 @@ there is a way to state that a specific check should continue upon violation.
 
 \subsection{Reasons to simplify}
 
-TBD: This needs to be elaborated.
+The original reasons~\cite{p0380r0} for including in the contract system a mode where execution
+continues after running the violation handler were:
+
+\begin{itemize}
+
+	\item Gradual introduction of contracts in old code bases.
+	\item Test of the contracts themselves.
+
+\end{itemize}
+
+From those, the second one is not a real issue as there are multiple solutions.
+The real motivation for continuation is the gradual introduction of contracts in
+old code bases. Besides that, it is also important to address the case where a library
+that already has some contracts need additional contracts to be added to it.
+In both cases, being able to add new contracts where a violation only triggers
+some mechanism to log the violation is important.
+
+For the very same reason, it seems that the current solution (where all contracts in
+a translation unit change their behavior in case of violation from terminating the 
+program to continue after violation) is not the right solution to the problem.
+What it is really needed is a mechanism to log violations to new contracts, while
+preexisting and well checked all contracts remain terminating upon violation.
+
+Consequently, the first thing to do is to remove the continuation build mode
+from the contract system. The build mode may be \cppid{off} (no contact is checked),
+\cppid{default} (only default contracts are checked) or \cppid{audit}
+(both default and audit contracts are checked). If any of those checked contracts
+is violated, the violation handler is executed and when completed the program
+is terminated.
+
+To solve the need of contract violation logging a different mechanism could be
+defined. However, we could also add a new contract construct to keep integration
+in the contract facility. We propose to add a behavior adjective to any \cppkey{default}
+or \cppkey{audit} contract to indicate that violation implies running the violation
+handler and resuming execution. For that purpose we propose to use the adjective
+\cppkey{continue}. In the next subsection, details are given.
 
 \subsection{A simplified model}
 

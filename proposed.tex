@@ -64,27 +64,6 @@ The build mode can be any of the following four: \textmark{off},
 Note, that only \cppid{audit} and \cppid{default} checks are affected
 by the build mode.
 
-\subsection{Continuation mode}
-
-This paper proposes to remove the continuation mode.
-
-\begin{itemize}
-
-  \item An implementation is
-        allowed to assume that any invocation to the violation handler
-	generated from a \cppkey{default} or \cppkey{audit} contract will not
-	return. This information may be used to generate code accordingly.
-	In this case, an invocation to a returning violation handler results
-	in a call to \cppid{std::terminate} after executing the violation 
-	handler.
-
-  \item An implementation is allowed to assume that any invocation to the
-	violation handler generated from a \cppkey{default} or \cppkey{audit} 
-	contract with a \cppkey{continue} modifier is not allowed to assume
-	that the handler does not return.
-
-\end{itemize}
-
 \subsection{Allowing assumption of axioms}
 
 This paper proposes that an axiom mode is added. The axiom mode can be either
@@ -96,6 +75,29 @@ This paper proposes that an axiom mode is added. The axiom mode can be either
   \item When the axiom mode is \textmark{on} an implementation is
         allowed to assume the axiom.
 \end{itemize}
+
+\subsection{Continuation mode}
+
+This paper proposes to remove the continuation mode.
+
+\begin{itemize}
+
+  \item An invocation to a returning violation handler results
+	in a call to \cppid{std::terminate} after executing the violation 
+	handler.
+\end{itemize}
+
+\subsection{A new syntax for continuation}
+
+This paper proposes to add syntax for a new \cppkey{continue} adjective that can
+be applied to any \cppkey{default} or \cppkey{audit} contract.
+
+\begin{lstlisting}
+[[assert continue: predicate]]; // Default predicate with continuation
+[[assert default continue: predicate]]; // Same as above
+
+[[assert audit continue: predicate]]; // Aduit predicate with continuation
+\end{lstlisting}
 
 \subsection{Summary of semantics}
 
