@@ -1,0 +1,21 @@
+\section{Summary}
+
+\begin{frame}[t]{D1290R2 in on slide}
+\begin{enumerate}
+\item Contracts with \cppkey{default} and \cppkey{audit} can only be
+	assumed when they are evaluated and there is no continuation.
+
+\vfill
+\item A new \cppid{axiom} mode at translation time to enable/disable axiom assumption.
+
+\vfill
+\item Removal of \cppid{continuation} mode at translation time.
+\begin{itemize}
+  \item A failed run-tme check results in program termination.
+\end{itemize}
+
+\vfill
+\item Add the ability to specify in code that a contract check continues in case of failure.
+\end{enumerate}
+\end{frame}
+

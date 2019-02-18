@@ -1,0 +1,122 @@
+\section{Removing UB from contracts}
+
+\begin{frame}[t,fragile]{Example 1}
+\vspace{-1em}
+\begin{columns}[T]
+
+\column{.6\textwidth}
+\begin{block}{}
+\begin{lstlisting}
+int f(int x) 
+  [[expects: x>0]] // #1
+{
+  return 1/x;
+}
+
+ing g(int x) 
+  [[expects audit: x==2 || x==3]] // #2
+{
+  return f(x);
+}
+\end{lstlisting}
+\end{block}
+
+\column{.5\textwidth}
+\begin{itemize}
+  \item \emph{build}=\cppid{audit}
+    \begin{itemize}
+      \item Both checked.
+      \item Both assumed.
+      \item \#1 can be elided.
+    \end{itemize}
+  \pause\vfill
+  \item \emph{build}=\cppid{default}
+    \begin{itemize}
+      \item Only \#1 is checked.
+      \item \#2 is assumed.
+      \item \#1 can be elided.
+      \item \cppid{g(0)} is UB.
+    \end{itemize}
+  \pause\vfill
+  \item \emph{build}=\cppid{off}
+    \begin{itemize}
+      \item \#1 and \#2 are not checked.
+      \item \#1 and \#2 are assumed.
+      \item \cppid{g(0)} is UB.
+    \end{itemize}
+\end{itemize}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t,fragile]{Example 2 (Herb Sutter)}
+\begin{block}{}
+\begin{lstlisting}
+void f(int x) [[expects audit: x==2]]
+{ 
+  printf("%d\n",x); 
+}
+
+// Illegal memory access if violation occurs
+void g(int x) 
+  [[expects: x>=0 && x<3]]
+{
+  extern int x[3];
+  a[x] = 42;
+}
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[t,fragile]{Example 2 (Herb Sutter)}
+\begin{block}{}
+\begin{lstlisting}
+void h(int x)
+  [[expects: x>=1 && x<=3]]
+{
+  switch (x) {
+    case 1: foo(); break;
+    case 2: bar(); break;
+    case 3: baz(); break;
+  }
+}
+\end{lstlisting}
+\end{block}
+\begin{itemize}
+\item If precondition not satisfied no function would be called.
+\item Much worse if \cppkey{switch} implemented as \emph{jump-table}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Example 2 (Herb Sutter)}
+\begin{block}{}
+\begin{lstlisting}
+void test() {
+  int val = std::rand();
+  try { f(val); /*...*/ } catch(...) { /*...*/ }
+  try { g(val); /*...*/ } catch(...) { /*...*/ }
+  try { h(val); /*...*/ } catch(...) { /*...*/ }
+}
+\end{lstlisting}
+\end{block}
+\begin{itemize}
+\item \emph{build}=\cppid{audit} $\Rightarrow$ OK.
+\item \emph{build}=\cppid{default} $\Rightarrow$ UB.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{EWG Direction}
+\begin{itemize}
+\item Remove the introduction of assumptions by the presence of non-axiom contracts:
+\begin{itemize}  
+  \item SF: 15.
+  \item F: 5.
+  \item N: 3.
+  \item A: 3.
+  \item SA: 7.
+\end{itemize}
+
+\item \textmark{Proposal}: A \cppkey{default} or \cppkey{audit} contract that is not evaluated 
+      cannot be used for any kind of assumption.
+\end{itemize}
+\end{frame}

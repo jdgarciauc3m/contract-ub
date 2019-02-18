@@ -1,0 +1,53 @@
+\section{Continuation mode}
+
+\begin{frame}[t]{Why a continuation mode}
+\begin{itemize}
+  \item Key motivating case for continuation:
+    \begin{itemize}
+      \item Gradual introduction of contracts in existing codebases.
+      \item Adding more contracts to a library.
+    \end{itemize}
+  \item We want:
+    \begin{itemize}
+      \item Existing contracts terminate upon violation.
+      \item Newly added contracts log the violation and continue.
+    \end{itemize}
+  \item But:
+    \begin{itemize}
+      \item Setting continuation for a whole translation does not give us what we want.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Part I: Remove continuation mode}
+\begin{itemize}
+  \item \textmark{Simplification}: Remove continuation mode from translation options.
+
+  \vfill
+  \item Consequences:
+    \begin{itemize}
+      \item Three build modes: \cppid{off}, \cppid{default}, \cppid{audit}.
+      \item Two axiom modes: \cppid{off}, \cppid{on}.
+      \item All contract violations result in program termination.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Part II: Add a continue syntax}
+\begin{itemize}
+  \item For \cppkey{default} and \cppkey{audit} contracts a \cppkey{continue} mode
+        can be specified.
+    \begin{itemize}
+      \item It changes the check by continuing execution after violation handler.
+    \end{itemize}
+\end{itemize}
+\begin{lstlisting}
+[[assert: p!=nullptr]]; // Default contract. Terminates.
+
+[[assert continue: p!=nullptr]]; // Default contract. Continues.
+[[assert default continue: p!=nullptr]]; // Same as above
+
+[[assert audit: p!=nullptr]]; // Audit contract. Terminates.
+[[assert audit continue: p!=nullptr]]; // Audit contract. Continues.
+\end{lstlisting}
+\end{frame}
