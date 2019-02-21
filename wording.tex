@@ -25,34 +25,3 @@ level are evaluated.}
 
 \vspace{2em}
 
-\subsection{Part II: A new axiom mode}
-
-After \textbf{[dcl.attr.contract.check]/4}, add a new paragraph:
-
-\begin{flushright}
-\begin{minipage}[t]{0.9\textwidth}
-\noindent5. \add{A translation may be performed with an \emph{axiom mode}
-which can be either \emph{off} or \emph{on}.
-Unless the \emph{axiom level} is \emph{off} it is unspecified
-whether the predicate for an \emph{axiom} contract is evaluated; if the
-predicate of such a contract would evaluate to false, the behavior is undefined.}
-\end{minipage}
-\end{flushright}
-
-\subsection{Part III: Removing continue build mode}
-
-Remove completely \textbf{[dcl.attr.contract.check]/7}.
-
-Add a new clause in \textbf{[dcl.attr.contract.check]}.
-
-\begin{flushright}
-\begin{minipage}[t]{0.9\textwidth}
-\noindent 7.
-	\add{After completing the execution of the violation handler execution is terminated
-	by invoking the function \texttt{std::terminate} (13.5.1).}
-\end{minipage}
-\end{flushright}
-
-\subsection{Part IV: Adding a contract mode}
-
-TBD.
